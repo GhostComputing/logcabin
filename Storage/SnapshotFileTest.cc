@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 #include <sys/stat.h>
 
-#include "build/Core/ProtoBufTest.pb.h"
+#include "Protocol/Test/ProtoBufTest.pb.h"
 #include "Core/Debug.h"
 #include "Core/StringUtil.h"
 #include "Core/STLUtil.h"

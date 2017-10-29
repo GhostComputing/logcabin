@@ -17,8 +17,8 @@
 #include <memory>
 #include <vector>
 
-#include "build/Protocol/Raft.pb.h"
-#include "build/Protocol/RaftLogMetadata.pb.h"
+#include "Protocol/Raft/Raft.pb.h"
+#include "Protocol/Raft/RaftLogMetadata.pb.h"
 
 #ifndef LOGCABIN_STORAGE_LOG_H
 #define LOGCABIN_STORAGE_LOG_H

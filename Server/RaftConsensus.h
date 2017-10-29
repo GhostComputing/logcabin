@@ -21,10 +21,10 @@
 #include <thread>
 #include <unordered_map>
 
-#include "build/Protocol/Client.pb.h"
-#include "build/Protocol/Raft.pb.h"
-#include "build/Protocol/ServerStats.pb.h"
-#include "build/Server/SnapshotStats.pb.h"
+#include "Protocol/Client/Client.pb.h"
+#include "Protocol/Raft/Raft.pb.h"
+#include "Protocol/Server/ServerStats.pb.h"
+#include "Protocol/Snapshot/SnapshotStats.pb.h"
 #include "Client/SessionManager.h"
 #include "Core/CompatAtomic.h"
 #include "Core/ConditionVariable.h"

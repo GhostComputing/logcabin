@@ -19,7 +19,7 @@
 #include <string>
 #include <thread>
 
-#include "build/Protocol/ServerControl.pb.h"
+#include "Protocol/Server/ServerControl.pb.h"
 #include "include/LogCabin/Client.h"
 #include "Client/Backoff.h"
 #include "Client/LeaderRPC.h"

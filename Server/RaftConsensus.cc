@@ -24,8 +24,8 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "build/Protocol/Raft.pb.h"
-#include "build/Server/SnapshotMetadata.pb.h"
+#include "Protocol/Raft/Raft.pb.h"
+#include "Protocol/Snapshot/SnapshotMetadata.pb.h"
 #include "Core/Buffer.h"
 #include "Core/Debug.h"
 #include "Core/ProtoBuf.h"
