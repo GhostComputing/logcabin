@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.7)
 
 project(logcabin2)
 
-add_compile_options(-std=c++11)
-add_compile_options(-O0)
-add_compile_options(-ggdb3)
-add_compile_options(-fpermissive)
 add_compile_options(-Wall)
 add_compile_options(-Wextra)
 add_compile_options(-Wcast-align)
@@ -18,8 +14,13 @@ add_compile_options(-Wno-unused-parameter)
 add_compile_options(-Woverloaded-virtual)
 add_compile_options(-Wwrite-strings)
 add_compile_options(-DSWIG)
+#add_compile_options(-Weffc++) # it will generate lots of error message and compile failed
+
+add_compile_options(-std=c++11)
+add_compile_options(-O0)
+add_compile_options(-ggdb3)
 add_compile_options(-fno-access-control)
-#add_compile_options(-Weffc++)
+add_compile_options(-fpermissive)
 
 # Compile LogCabin
 include_directories(
@@ -102,19 +103,47 @@ set(TREE_SOURCE_FILES
             Tree/Tree.cc
 )
 
+set(PROTOBUF_CLIENT_SOURCE_FILES
+        Protocol/Client/Client.pb.cc
+)
+
+set(PROTOBUF_RAFT_SOURCE_FILES
+        Protocol/Raft/Raft.pb.cc
+        Protocol/Raft/RaftLogMetadata.pb.cc
+)
+
+set(PROTOBUF_SERVER_SOURCE_FILES
+        Protocol/Server/ServerControl.pb.cc
+        Protocol/Server/ServerStats.pb.cc
+)
+
+set(PROTOBUF_SNAPSHOT_SOURCE_FILES
+        Protocol/Snapshot/SnapshotMetadata.pb.cc
+        Protocol/Snapshot/SnapshotStateMachine.pb.cc
+        Protocol/Snapshot/SnapshotStats.pb.cc
+)
+
+set(PROTOBUF_STORAGE_SOURCE_FILES
+        Protocol/Storage/SegmentedLog.pb.cc
+        Protocol/Storage/SimpleFileLog.pb.cc
+)
+
+set(PROTOBUF_TREE_SOURCE_FILES
+        Protocol/Tree/Snapshot.pb.cc
+)
+
+set(PROTOBUF_TEST_SOURCE_FILES
+        Protocol/Test/ProtoBufTest.pb.cc
+)
+
 set(PROTOCOL_SOURCE_FILES
-            Protocol/Client/Client.pb.cc
-            Protocol/Raft/Raft.pb.cc
-            Protocol/Raft/RaftLogMetadata.pb.cc
-            Protocol/Server/ServerControl.pb.cc
-            Protocol/Server/ServerStats.pb.cc
-            Protocol/Snapshot/SnapshotMetadata.pb.cc
-            Protocol/Snapshot/SnapshotStateMachine.pb.cc
-            Protocol/Snapshot/SnapshotStats.pb.cc
-            Protocol/Storage/SegmentedLog.pb.cc
-            Protocol/Storage/SimpleFileLog.pb.cc
-            Protocol/Tree/Snapshot.pb.cc
-            Protocol/Test/ProtoBufTest.pb.cc
+        ${PROTOBUF_CLIENT_SOURCE_FILES}
+        ${PROTOBUF_RAFT_SOURCE_FILES}
+        ${PROTOBUF_SERVER_SOURCE_FILES}
+        ${PROTOBUF_SNAPSHOT_SOURCE_FILES}
+        ${PROTOBUF_STORAGE_SOURCE_FILES}
+        ${PROTOBUF_TREE_SOURCE_FILES}
+        ${PROTOBUF_TEST_SOURCE_FILES}
 )
 
 file(GLOB CLIENT_TEST_SOURCE_FILES "Client/*Test.cc" "Client/*Mock.cc")
@@ -126,7 +155,7 @@ file(GLOB STORAGE_TEST_SOURCE_FILES "Storage/*Test.cc" "Storage/*Mock.cc")
 file(GLOB TREE_TEST_SOURCE_FILES "Tree/*Test.cc" "Tree/*Mock.cc")
 
 set(LOGCABIN_MAIN_SOURCE_FILES Server/Main.cc)
-set(LOGCABIN_TEST_MAIN_SOURCE_FILES test/TestRunner.cc)
+set(LOGCABIN_TEST_MAIN_SOURCE_FILES Test/TestRunner.cc)
 
 if (APPLE)
     message(STATUS "Can not find library in non-Linux machine")
@@ -197,7 +226,35 @@ add_library(logcabin STATIC
         ${PROTOCOL_SOURCE_FILES}
 )
 
+add_executable(Benchmark ${CMAKE_CURRENT_SOURCE_DIR}/Examples/Benchmark.cc)
+target_link_libraries(Benchmark logcabin ${THIRD_PARTY_LIBS})
+add_executable(FailoverTest ${CMAKE_CURRENT_SOURCE_DIR}/Examples/FailoverTest.cc)
+target_link_libraries(FailoverTest logcabin ${THIRD_PARTY_LIBS})
+add_executable(HelloWorld ${CMAKE_CURRENT_SOURCE_DIR}/Examples/HelloWorld.cc)
+target_link_libraries(HelloWorld logcabin ${THIRD_PARTY_LIBS})
+add_executable(Reconfigure ${CMAKE_CURRENT_SOURCE_DIR}/Examples/Reconfigure.cc)
+target_link_libraries(Reconfigure logcabin ${THIRD_PARTY_LIBS})
+add_executable(ReconfigureTest ${CMAKE_CURRENT_SOURCE_DIR}/Examples/ReconfigureTest.cc)
+target_link_libraries(ReconfigureTest logcabin ${THIRD_PARTY_LIBS})
+add_executable(SmokeTest ${CMAKE_CURRENT_SOURCE_DIR}/Examples/SmokeTest.cc)
+target_link_libraries(SmokeTest logcabin ${THIRD_PARTY_LIBS})
+add_executable(TreeOps ${CMAKE_CURRENT_SOURCE_DIR}/Examples/TreeOps.cc)
+target_link_libraries(TreeOps logcabin ${THIRD_PARTY_LIBS})
+add_executable(ServerControl ${CMAKE_CURRENT_SOURCE_DIR}/Client/ServerControl.cc)
+target_link_libraries(ServerControl logcabin ${THIRD_PARTY_LIBS})
+add_executable(Tool ${CMAKE_CURRENT_SOURCE_DIR}/Storage/Tool.cc ${STORAGE_SOURCE_FILES} ${PROTOBUF_SNAPSHOT_SOURCE_FILES})
+target_link_libraries(Tool logcabin ${THIRD_PARTY_LIBS})
+
 set(INSTALL_PATH ${CMAKE_CURRENT_BINARY_DIR}/logcabin)
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/LogCabin DESTINATION ${INSTALL_PATH}/bin/)
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/TestRunner DESTINATION ${INSTALL_PATH}/bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/Benchmark DESTINATION ${INSTALL_PATH}/bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/FailoverTest DESTINATION ${INSTALL_PATH}/bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/HelloWorld DESTINATION ${INSTALL_PATH}/bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/Reconfigure DESTINATION ${INSTALL_PATH}/bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/ReconfigureTest DESTINATION ${INSTALL_PATH}/bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/SmokeTest DESTINATION ${INSTALL_PATH}/bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/TreeOps DESTINATION ${INSTALL_PATH}/bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/ServerControl DESTINATION ${INSTALL_PATH}/bin/)
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/Tool DESTINATION ${INSTALL_PATH}/bin/)
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/liblogcabin.a DESTINATION ${INSTALL_PATH}/lib/)
